@@ -1,0 +1,16 @@
+{
+    "name": "NBA Stats Viewer",
+    "short_name": "NBA Stats",
+    "start_url": "https://your-app-name.streamlit.app",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "description": "View NBA player career stats.",
+    "icons": [
+      {
+        "src": "/icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  

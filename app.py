@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_squared_error
-import requests
 from playersAPI import *
 from player import player
 from nba_api.stats.endpoints import *
@@ -19,7 +18,7 @@ st.write("Enter an NBA player's name to view their career stats.")
 # Input for player name
 player_name = st.text_input("Player Name", placeholder="e.g., LeBron James")
 
-def predict_next_season_ppg(stats_df, degree=2):
+def predict_next_season_ppg(stats_df, degree=3):
     # Ensure sufficient data points
     if len(stats_df) < 2:
         return "Insufficient data to predict PPG."
