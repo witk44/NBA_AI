@@ -83,7 +83,7 @@ def fetch_player_stats(name):
             id = str(PLAYER['id'])
             career = playercareerstats.PlayerCareerStats(player_id=id)
             career_df = career.get_data_frames()[0]
-            career_df = career_df[career_df['TEAM_ID'] != 'TOT']
+            career_df = career_df[career_df['TEAM_ABBREVIATION'] != 'TOT']
             # Drop unnecessary columns
             career_df = career_df.drop(columns=['PLAYER_ID', 'LEAGUE_ID', 'TEAM_ID'])
 
