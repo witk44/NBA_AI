@@ -2,13 +2,14 @@ import streamlit as st
 import pandas as pd
 import warnings
 import numpy as np
+from playersAPI import *
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics._regression import UndefinedMetricWarning
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from playersAPI import *
-from player import player
+
 from nba_api.stats.endpoints import *
 import matplotlib.pyplot as plt
 
@@ -74,13 +75,12 @@ def predict_next_season_ppg(stats_df, degree_range=(1, 5)):
 
 
 def fetch_player_stats(name):
-    players = get_active_players()
+    player = find_players_by_full_name(name)[0]
     
-    # Try to find the player directly without unnecessary object creation
-    for PLAYER in players:
-        first_last = f"{PLAYER['first_name'].lower()} {PLAYER['last_name'].lower()}"
+    if player:
+        first_last = f"{player['first_name'].lower()} {player['last_name'].lower()}"
         if name.lower() in first_last:
-            id = str(PLAYER['id'])
+            id = str(player['id'])
             career = playercareerstats.PlayerCareerStats(player_id=id)
             career_df = career.get_data_frames()[0]
             career_df = career_df[career_df['TEAM_ABBREVIATION'] != 'TOT']
@@ -93,19 +93,19 @@ def fetch_player_stats(name):
             career_df['APG'] = (career_df['AST'] / career_df['GP'].replace(0, np.nan)).round(1)
             career_df['SPG'] = (career_df['STL'] / career_df['GP'].replace(0, np.nan)).round(1)
             career_df['BPG'] = (career_df['BLK'] / career_df['GP'].replace(0, np.nan)).round(1)
-
+            
             # Apply higher weights to the latest seasons
             career_df['SEASON_ID'] = career_df['SEASON_ID'].str[:4].astype(int)
             max_season = career_df['SEASON_ID'].max()
             career_df['Weight'] = 1.0 + (career_df['SEASON_ID'] - (max_season - 3)).clip(lower=0) * 2.0
-
-            return career_df
+            
+            return career_df,first_last
     return None  # If player not found
 
     
 if player_name:
     
-    stats_df = fetch_player_stats(player_name)
+    stats_df,player_name = fetch_player_stats(player_name)
     if stats_df is not None:
         predicted_ppg, confidence_interval = predict_next_season_ppg(stats_df)
         selected_columns = ['Weight']
