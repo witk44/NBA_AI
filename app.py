@@ -75,13 +75,14 @@ def predict_next_season_ppg(stats_df, degree_range=(1, 5)):
 
 
 def fetch_player_stats(name):
-    player = find_players_by_full_name(name)[0]
+    player = next((p for p in find_players_by_full_name(name) if p['is_active']), None)
     
     if player:
         first_last = f"{player['first_name'].lower()} {player['last_name'].lower()}"
         if name.lower() in first_last:
             id = str(player['id'])
             career = playercareerstats.PlayerCareerStats(player_id=id)
+            
             career_df = career.get_data_frames()[0]
             career_df = career_df[career_df['TEAM_ABBREVIATION'] != 'TOT']
             # Drop unnecessary columns
